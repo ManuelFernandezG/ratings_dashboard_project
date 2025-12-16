@@ -9,7 +9,7 @@ If you have already installed the requirements (see below), you can run the enti
 ### **Windows**
 
 1.  Navigate to the project folder.
-2.  Double-click **`run_project.bat`**.
+2.  Double-click **`run_project.bat`**. (This script automatically searches for Miniconda/Anaconda on your system).
 
 ### **macOS / Linux**
 
@@ -22,7 +22,7 @@ If you have already installed the requirements (see below), you can run the enti
 
 ### 1\. Environment Setup
 
-Create a virtual environment to manage dependencies:
+Create a virtual environment named `credit-risk-env` to manage dependencies:
 
 ```bash
 # Create environment
@@ -35,12 +35,13 @@ conda activate credit-risk-env
 pip install -r requirements.txt
 ```
 
-### 2\. API Configuration
+### 2\. API Configuration (Critical)
 
-You need a free FRED API key to fetch macroeconomic data.
+This project requires a free FRED API key to fetch macroeconomic data.
 
 1.  Get your key at [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html).
-2.  Create a `.env` file in the **root directory** and add your key:
+2.  Create a file named exactly **`.env`** in the root directory (ensure it is not `.env.txt`).
+3.  Add your key without quotes or spaces:
     ```text
     FRED_API_KEY=your_32_character_key_here
     ```
@@ -56,25 +57,44 @@ You need a free FRED API key to fetch macroeconomic data.
 | `src/modeling/` | Training scripts for Logistic Regression and XGBoost. |
 | `src/evaluation/` | Metric calculation (AUC/KS) and SHAP value generation. |
 | `dashboards/` | Multi-page Dash application code. |
-| `data/` | Local storage for raw/processed datasets. |
-| `models/` | Serialized `.pkl` models and evaluation JSONs. |
+| `data/` | Local storage for raw/processed datasets (Created automatically). |
+| `models/` | Serialized `.pkl` models and evaluation JSONs (Created automatically). |
 
 -----
 
-## 🏗️ Script for Windows (`run_project.bat`)
+## 🏗️ Portable Script for Windows (`run_project.bat`)
 
-Save this code as a file named `run_project.bat` in your root folder.
+This script is designed for portability. It dynamically searches for Conda in standard user and system paths.
 
 ```batch
 @echo off
 SETLOCAL
+TITLE Credit Risk Pipeline - Universal Launcher
+
+:: Find the project folder
 SET "PROJECT_ROOT=%~dp0"
 cd /d "%PROJECT_ROOT%"
 
-call conda activate credit-risk-env
-if %errorlevel% neq 0 (
-    call "%USERPROFILE%\miniconda3\Scripts\activate.bat" credit-risk-env
+:: DYNAMIC CONDA SEARCH
+IF EXIST "%USERPROFILE%\miniconda3\Scripts\activate.bat" (
+    SET "CONDA_PATH=%USERPROFILE%\miniconda3\Scripts\activate.bat"
+) ELSE IF EXIST "%USERPROFILE%\anaconda3\Scripts\activate.bat" (
+    SET "CONDA_PATH=%USERPROFILE%\anaconda3\Scripts\activate.bat"
+) ELSE IF EXIST "C:\ProgramData\miniconda3\Scripts\activate.bat" (
+    SET "CONDA_PATH=C:\ProgramData\miniconda3\Scripts\activate.bat"
+) ELSE (
+    echo [ERROR] Could not find Miniconda or Anaconda. Please install and try again.
+    pause
+    exit /b
 )
+
+:: ACTIVATE ENVIRONMENT
+call "%CONDA_PATH%" credit-risk-env
+
+:: Ensure folder structure exists
+if not exist "data\raw" mkdir data\raw
+if not exist "data\processed" mkdir data\processed
+if not exist "models" mkdir models
 
 echo --- CLEANING OLD DATA ---
 if exist "data\raw\*.csv" del /q "data\raw\*.csv"
@@ -91,6 +111,7 @@ python src/modeling/train_models.py
 python src/evaluation/evaluate.py
 
 echo --- LAUNCHING DASHBOARD ---
+start http://127.0.0.1:8050/
 cd dashboards
 python app.py
 pause
@@ -100,12 +121,13 @@ pause
 
 ## 🏗️ Script for macOS/Linux (`run_project.sh`)
 
-Save this code as a file named `run_project.sh` in your root folder.
-
 ```bash
 #!/bin/bash
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$PROJECT_ROOT"
+
+# Ensure folder structure exists
+mkdir -p data/raw data/processed models
 
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate credit-risk-env
@@ -133,7 +155,7 @@ The pipeline transforms raw financial statements into predictive risk signals th
 
 ### 1\. Data Fusion
 
-We combine **Annual Fundamentals** (static company health) with **Daily Macro Data** (dynamic market stress). To bridge the frequency gap, annual ratios are forward-filled to create a daily time series, ensuring the model can react to daily market volatility like VIX spikes.
+We combine **Annual Fundamentals** (static company health) with **Daily Macro Data** (dynamic market stress). To bridge the frequency gap, annual ratios are forward-filled to create a daily time series.
 
 ### 2\. Synthetic Labeling (The Target)
 
@@ -141,9 +163,9 @@ The model predicts a **90-day forward-looking credit event**. A "High Risk" even
 
 ### 3\. Machine Learning Strategy
 
-  * **XGBoost**: Used to capture non-linear relationships, such as how high leverage becomes significantly more dangerous when the Fed Funds Rate rises.
-  * **Logistic Regression**: Used for a stable, linear baseline that provides clear coefficients for risk weightings.
+  * **XGBoost**: Used to capture non-linear relationships.
+  * **Logistic Regression**: Used for a stable, linear baseline.
 
 ### 4\. Interpretability (SHAP)
 
-Because credit decisions require transparency, we utilize **SHAP (Shapley Additive Explanations)**. This breaks down each company's risk score into specific "contributions" from features like Debt-to-Equity or the current TED Spread.
+We utilize **SHAP (Shapley Additive Explanations)** to break down each company's risk score into specific "contributions" from features like Debt-to-Equity or the current TED Spread.
