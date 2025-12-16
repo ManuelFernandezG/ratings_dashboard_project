@@ -1,0 +1,18 @@
+ratings_dashboard_project/
+├── .gitignore                  # Files to ignore (e.g., venv, __pycache__)
+├── requirements.txt            # List of dependencies (dash, pandas, etc.)
+├── data/
+│   ├── raw/                    # Where load_fundamentals.py saves its output
+│   │   └── company_fundamentals.csv
+│   └── processed/              # Where the ML pipeline saves features
+│       └── features_and_target.csv
+├── src/
+│   └── ingestion/
+│       └── load_fundamentals.py # The script that fetches Yahoo Finance data
+├── dashboards/
+│   ├── app.py                  # The MAIN entry point (Initializes Dash)
+│   └── pages/                  # MUST be named "pages" for multi-page support
+│       ├── p0_overview.py      # Your Main Dashboard (Sector/Region charts)
+│       ├── p1_model_metrics.py  # Model Performance page
+│       └── p2_interpretability.py # SHAP and Interpretability page
+└── models/                     # Saved model artifacts (.json, .csv)

@@ -1,0 +1,9 @@
+.env
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+*.pyc
+# If you have a virtual environment folder inside your project:
+credit-risk-env/
+venv/
+env/

@@ -1,0 +1,18 @@
+{
+    "Logistic_Regression": {
+        "AUC": 0.9362788554172223,
+        "KS_Statistic": 0.7573180672891655,
+        "True_Positives": 264,
+        "True_Negatives": 5819,
+        "False_Positives": 1101,
+        "False_Negatives": 48
+    },
+    "XGBoost": {
+        "AUC": 0.9997105194901437,
+        "KS_Statistic": 0.9975433526011561,
+        "True_Positives": 312,
+        "True_Negatives": 6883,
+        "False_Positives": 37,
+        "False_Negatives": 0
+    }
+}
