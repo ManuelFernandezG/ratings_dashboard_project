@@ -111,7 +111,7 @@ def run_evaluation():
                 shap_df['expected_value'] = 0.5 
             
             shap_df.to_csv(os.path.join(MODEL_DIR, "xgboost_shap_values.csv"), index=False)
-            print("✅ SUCCESS: SHAP values saved using Generic Explainer.")
+            print(" SUCCESS: SHAP values saved using Generic Explainer.")
 
     # Save overall performance summary
     summary_path = os.path.join(MODEL_DIR, "model_performance_summary.json")

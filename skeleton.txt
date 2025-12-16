@@ -1,18 +1,36 @@
 ratings_dashboard_project/
-├── .gitignore                  # Files to ignore (e.g., venv, __pycache__)
-├── requirements.txt            # List of dependencies (dash, pandas, etc.)
-├── data/
-│   ├── raw/                    # Where load_fundamentals.py saves its output
-│   │   └── company_fundamentals.csv
-│   └── processed/              # Where the ML pipeline saves features
-│       └── features_and_target.csv
-├── src/
-│   └── ingestion/
-│       └── load_fundamentals.py # The script that fetches Yahoo Finance data
-├── dashboards/
-│   ├── app.py                  # The MAIN entry point (Initializes Dash)
-│   └── pages/                  # MUST be named "pages" for multi-page support
-│       ├── p0_overview.py      # Your Main Dashboard (Sector/Region charts)
-│       ├── p1_model_metrics.py  # Model Performance page
-│       └── p2_interpretability.py # SHAP and Interpretability page
-└── models/                     # Saved model artifacts (.json, .csv)
+├── .env                        # API Keys (FRED_API_KEY) - [DO NOT COMMIT]
+├── .env.example                # Template for other users to add their keys
+├── .gitignore                  # Tells Git to ignore .env and __pycache__
+├── README.md                   # Updated setup and execution instructions
+├── requirements.txt            # All Python libraries needed for the project
+├── run_project.bat             # One-click automation script for Windows
+├── run_project.sh              # One-click automation script for macOS/Linux
+│
+├── dashboards/                 # DASHBOARD LAYER
+│   ├── app.py                  # Main entry point (multi-page setup)
+│   └── pages/                  # Page modules
+│       ├── p0_overview.py      # Sector/Region analysis
+│       ├── p1_model_metrics.py # ROC curves and accuracy scores
+│       └── p2_interpretability.py # SHAP value visualizations
+│
+├── src/                        # LOGIC LAYER
+│   ├── ingestion/              # Data fetching
+│   │   ├── load_fundamentals.py# Yahoo Finance scraper
+│   │   └── load_fred.py        # Macroeconomic data (FRED)
+│   ├── preprocessing/          # Data cleaning
+│   │   └── build_features.py   # Ratio engineering & target labeling
+│   ├── modeling/               # Model training
+│   │   └── train_models.py     # XGBoost and Logistic Regression training
+│   └── evaluation/             # Model interpretability
+│       └── evaluate.py         # SHAP value & metric generation
+│
+├── data/                       # DATA LAYER
+│   ├── raw/                    # Fundamentals and FRED csv files
+│   └── processed/              # Merged 'features_and_target.csv'
+│
+└── models/                     # ARTIFACT LAYER
+    ├── xgboost_model.pkl       # Saved trained model
+    ├── log_reg_model.pkl       # Saved trained model
+    ├── xgboost_shap_values.csv # Pre-calculated SHAP for the dashboard
+    └── model_performance.json  # Metrics (AUC/KS) for Page 1
