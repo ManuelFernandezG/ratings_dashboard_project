@@ -1,52 +1,118 @@
+# dashboards/app.py
+# -*- coding: utf-8 -*-
+
 import dash
-from dash import html, dcc
+from dash import html
 import dash_bootstrap_components as dbc
 import os
 
-# 1. Initialize the app
-# use_pages=True looks for files in the 'pages/' folder
+# ---------------------------------------------------------
+# Initialize Dash App
+# ---------------------------------------------------------
+
 app = dash.Dash(
-    __name__, 
-    use_pages=True, 
-    suppress_callback_exceptions=True, 
-    external_stylesheets=[dbc.themes.FLATLY]
+    __name__,
+    use_pages=True,
+    suppress_callback_exceptions=True,
+    external_stylesheets=[dbc.themes.FLATLY],
+    meta_tags=[
+        {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1, shrink-to-fit=no",
+        }
+    ],
 )
 
-# 2. Expose the Flask server instance for Gunicorn
+# Expose Flask server (for Gunicorn / Render)
 server = app.server
 
-# 3. Sidebar Layout
-sidebar = html.Div([
-    html.H2("Credit Risk Monitor", className="display-6 text-primary mb-4"),
-    html.Hr(),
-    html.P("Free-Data Credit Analytics Pipeline", className="text-muted mb-4"),
-    dbc.Nav(
+# ---------------------------------------------------------
+# Sidebar Component
+# ---------------------------------------------------------
+
+def build_sidebar():
+    return html.Div(
         [
-            dbc.NavLink(
-                page['name'], 
-                href=page['path'], 
-                active="exact",
-                className="py-2"
-            )
-            for page in dash.page_registry.values()
+            html.Div(
+                [
+                    html.H4(
+                        "Credit Risk",
+                        className="fw-bold mb-0 text-primary",
+                    ),
+                    html.Small(
+                        "Analytics Platform",
+                        className="text-muted",
+                    ),
+                ],
+                className="mb-4",
+            ),
+
+            dbc.Nav(
+                [
+                    dbc.NavLink(
+                        page["name"],
+                        href=page["path"],
+                        active="exact",
+                        className="mb-1",
+                    )
+                    for page in dash.page_registry.values()
+                ],
+                vertical=True,
+                pills=True,
+            ),
+
+            html.Hr(),
+
+            html.Small(
+                "© Credit Risk Monitor",
+                className="text-muted",
+            ),
         ],
-        vertical=True,
-        pills=True,
-    ),
-], className="p-3 bg-light vh-100")
+        className="p-3 bg-light h-100",
+    )
 
-# 4. Main Application Layout
-app.layout = dbc.Container([
-    dbc.Row([
-        # Sidebar (3 columns)
-        dbc.Col(sidebar, width=3, className="p-0 border-end"), 
-        # Page Content (9 columns)
-        dbc.Col(dash.page_container, width=9, id="page-content", className="p-4")
-    ])
-], fluid=True)
 
-# 5. Production Entry Point
-if __name__ == '__main__':
-    # On Render, the 'PORT' environment variable is used to set the port
+# ---------------------------------------------------------
+# App Layout
+# ---------------------------------------------------------
+
+app.layout = dbc.Container(
+    [
+        dbc.Row(
+            [
+                # Sidebar
+                dbc.Col(
+                    build_sidebar(),
+                    xs=12,
+                    md=4,
+                    lg=3,
+                    className="border-end",
+                ),
+
+                # Main Page Content
+                dbc.Col(
+                    dash.page_container,
+                    xs=12,
+                    md=8,
+                    lg=9,
+                    className="bg-white",
+                ),
+            ],
+            className="g-0 min-vh-100",
+        )
+    ],
+    fluid=True,
+)
+
+
+# ---------------------------------------------------------
+# Entry Point
+# ---------------------------------------------------------
+
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False,
+    )

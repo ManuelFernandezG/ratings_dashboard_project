@@ -1,18 +1,18 @@
 {
     "Logistic_Regression": {
-        "AUC": 0.9362788554172223,
-        "KS_Statistic": 0.7573180672891655,
-        "True_Positives": 264,
-        "True_Negatives": 5819,
-        "False_Positives": 1101,
-        "False_Negatives": 48
+        "AUC": 0.9359947641558288,
+        "KS_Statistic": 0.7505141521298475,
+        "True_Positives": 262,
+        "True_Negatives": 5835,
+        "False_Positives": 1097,
+        "False_Negatives": 50
     },
     "XGBoost": {
-        "AUC": 0.9997105194901437,
-        "KS_Statistic": 0.9975433526011561,
+        "AUC": 0.9995635255300576,
+        "KS_Statistic": 0.9972590882862089,
         "True_Positives": 312,
-        "True_Negatives": 6883,
-        "False_Positives": 37,
+        "True_Negatives": 6896,
+        "False_Positives": 36,
         "False_Negatives": 0
     }
 }
