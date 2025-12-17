@@ -64,7 +64,7 @@ def build_sidebar():
             html.Hr(),
 
             html.Small(
-                "© Credit Risk Monitor",
+                "by Manuel Fernandez",
                 className="text-muted",
             ),
         ],
