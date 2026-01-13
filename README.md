@@ -1,6 +1,8 @@
 # 📊 Credit Risk Dashboard & ML Pipeline
 
-This project is an end-to-end Machine Learning solution for corporate credit risk assessment. It automates the ingestion of financial fundamentals and macroeconomic data, trains predictive models (XGBoost & Logistic Regression), and visualizes model performance and interpretability (SHAP) through an interactive Dash dashboard.
+An end-to-end ML solution for corporate credit risk assessment combining financial fundamentals with macroeconomic indicators to predict 90-day forward credit events using XGBoost and Logistic Regression models.
+
+**🌐 [Live Dashboard](https://ratings-dashboard-project.onrender.com/)** | View interactive model predictions, SHAP interpretability, and performance metrics
 
 ## 🚀 One-Click Execution
 
